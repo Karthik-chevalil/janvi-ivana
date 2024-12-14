@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: #333;
+            animation: backgroundFade 5s infinite alternate;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.8s ease-in-out forwards;
+        }
+
+        h2 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+            font-size: 28px;
+            animation: bounceIn 1.5s ease-out forwards;
+        }
+
+        /* Form Styling */
+        .form-group {
+            display: flex;
+            flex-direction: column; /* Stack label above input */
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="email"], input[type="file"], input[type="submit"] {
+            width: 100%; /* Ensure input spans full width */
+            padding: 12px;
+            margin: 0; /* Remove extra margin for alignment */
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            box-sizing: border-box; /* Ensure consistent sizing */
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background-color: #f1f8e9;
+        }
+
+        input[type="submit"] {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.4s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="submit"]:hover {
+            background: linear-gradient(90deg, #45a049, #388e3c);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        #imagePreview {
+            margin-top: 15px;
+            max-width: 100%; /* Make image responsive */
+            height: auto;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        #imagePreview:hover {
+            transform: scale(1.05);
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 90%;
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            input[type="text"], input[type="email"], input[type="file"] {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            input[type="submit"] {
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            #imagePreview {
+                max-width: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h2 {
+                font-size: 20px;
+            }
+
+            input[type="text"], input[type="email"], input[type="file"] {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            input[type="submit"] {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            #imagePreview {
+                max-width: 120px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes backgroundFade {
+            from {
+                background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            }
+            to {
+                background: linear-gradient(135deg, #81c784, #388e3c);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>User Login</h2>
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+            <label for="relationship">Relationship to Baby:</label>
+            <input type="text" id="relationship" name="relationship" placeholder="e.g. Mother, Father, Grandparent" required>
+        </div>
+        <div class="form-group">
+            <label for="profilePicture">Upload Profile Picture:</label>
+            <input type="file" id="profilePicture" accept="image/*">
+            <img id="imagePreview" alt="Profile Picture Preview">
+        </div>
+        <input type="submit" value="Login">
+    </form>
+</div>
+
+<script>
+    document.getElementById('profilePicture').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const relationship = document.getElementById('relationship').value;
+        const profilePicture = document.getElementById('profilePicture').files[0];
+
+        if (name && email && relationship) {
+            const userData = {
+                name: name,
+                email: email,
+                relationship: relationship,
+                profilePicture: profilePicture ? URL.createObjectURL(profilePicture) : ''
+            };
+
+            // Store user data in localStorage
+            localStorage.setItem('userData', JSON.stringify(userData));
+
+            // Redirect to the baby information page
+            alert('Login successful! Redirecting...');
+            window.location.href = 'baby.html';
+        } else {
+            alert('Please fill all fields');
+        }
+    });
+</script>
+
+</body>
+</html>

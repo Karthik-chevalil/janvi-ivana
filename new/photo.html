@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Photo Gallery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f3f4f6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .upload-section button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .upload-section button:hover {
+            background: #0056b3;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .photo-card {
+            position: relative;
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .photo-card img:hover {
+            transform: scale(1.05);
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: red;
+        }
+
+        .enlarged-photo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .enlarged-photo img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+        }
+
+        .close-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .close-overlay:hover {
+            background: #f3f4f6;
+        }
+
+        @media (max-width: 768px) {
+            .photo-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .upload-section button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .delete-btn {
+                width: 20px;
+                height: 20px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Share your moment with me</h1>
+        <div class="upload-section">
+            <button id="uploadButton">Select Photos</button>
+            <input type="file" id="photoInput" accept="image/*" multiple>
+        </div>
+        <div class="photo-gallery" id="photoGallery"></div>
+    </div>
+
+    <div class="enlarged-photo" id="enlargedPhoto">
+        <button class="close-overlay" onclick="closeEnlarged()">Close</button>
+        <img id="enlargedImage" src="" alt="Enlarged">
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadStoredPhotos);
+
+        const uploadButton = document.getElementById('uploadButton');
+        const photoInput = document.getElementById('photoInput');
+        const photoGallery = document.getElementById('photoGallery');
+        const enlargedPhoto = document.getElementById('enlargedPhoto');
+        const enlargedImage = document.getElementById('enlargedImage');
+
+        uploadButton.addEventListener('click', () => {
+            photoInput.click();
+        });
+
+        photoInput.addEventListener('change', () => {
+            const files = photoInput.files;
+            const storedPhotos = JSON.parse(localStorage.getItem('photos')) || [];
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    storedPhotos.push(reader.result);
+                    localStorage.setItem('photos', JSON.stringify(storedPhotos));
+                    displayPhoto(reader.result);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        function loadStoredPhotos() {
+            const storedPhotos = JSON.parse(localStorage.getItem('photos')) || [];
+            storedPhotos.forEach(photo => {
+                displayPhoto(photo);
+            });
+        }
+
+        function displayPhoto(photoData) {
+            const photoCard = document.createElement('div');
+            photoCard.classList.add('photo-card');
+
+            const img = document.createElement('img');
+            img.src = photoData;
+            img.alt = "Photo";
+            img.addEventListener('click', () => enlargePhoto(photoData));
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.textContent = 'x';
+            deleteBtn.addEventListener('click', () => deletePhoto(photoCard, photoData));
+
+            photoCard.appendChild(img);
+            photoCard.appendChild(deleteBtn);
+            photoGallery.appendChild(photoCard);
+        }
+
+        function enlargePhoto(photoData) {
+            enlargedImage.src = photoData;
+            enlargedPhoto.style.display = 'flex';
+        }
+
+        function closeEnlarged() {
+            enlargedPhoto.style.display = 'none';
+        }
+
+        function deletePhoto(photoCard, photoData) {
+            const storedPhotos = JSON.parse(localStorage.getItem('photos')) || [];
+            const updatedPhotos = storedPhotos.filter(photo => photo !== photoData);
+            localStorage.setItem('photos', JSON.stringify(updatedPhotos));
+            photoGallery.removeChild(photoCard);
+        }
+    </script>
+</body>
+</html>

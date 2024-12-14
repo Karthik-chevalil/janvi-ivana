@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Countdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20%;
+            background-color: #f0f8ff;
+            color: #333;  animation: fadeIn 1s forwards;
+            background: linear-gradient(135deg, #e798ff, #ececec);
+            height: 100vh;
+
+
+        }
+        #timer {
+            font-size: 2em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Countdown to Your Birthday (October 10th)</h1>
+    <div id="timer"></div>
+
+    <script>
+        function updateCountdown() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+
+            // Set the next birthday (October 10th of this year or next year)
+            let birthday = new Date(`${currentYear}-10-10T00:00:00`);
+            if (now > birthday) {
+                birthday = new Date(`${currentYear + 1}-10-10T00:00:00`);
+            }
+
+            const diff = birthday - now;
+
+            // Calculate days, hours, minutes, and seconds
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById("timer").textContent = 
+                `${days} Days ${hours} Hours ${minutes} Minutes ${seconds} Seconds`;
+
+            // Update timer every second
+            setTimeout(updateCountdown, 1000);
+        }
+
+        updateCountdown();
+    </script>
+</body>
+</html>
